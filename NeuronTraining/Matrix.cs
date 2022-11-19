@@ -27,6 +27,21 @@ namespace NeuronTraining
             }
         }
 
+        public static Matrix Square(Matrix matrixToSquare)
+        {
+            var result = new Matrix(matrixToSquare.RowCount, matrixToSquare.ColumnCount);
+
+            for (int i = 0; i < matrixToSquare.RowCount; i++)
+            {
+                for (int j = 0; j < matrixToSquare.ColumnCount; j++)
+                {
+                    result[i, j] = Math.Pow(matrixToSquare[i, j], 2);
+                }
+            }
+
+            return result;
+        }
+
         public static Matrix Subtract(Matrix minuend, Matrix subtrahend)
         {
             var result = new Matrix(minuend.RowCount, minuend.ColumnCount);

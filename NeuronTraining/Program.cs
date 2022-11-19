@@ -35,14 +35,15 @@ namespace NeuronTraining
 
             //--------------------------
             // Final etalon output
-            var F = Matrix.GetMatrixFromArray(new double[,]
+            var T = Matrix.GetMatrixFromArray(new double[,]
             {
                 { 1 },
                 { 0 },
                 { 0 }
             });
-
-            var Efinal = Matrix.Subtract(F, O2);
+            
+            var Efinal = Matrix.Subtract(T, O2);
+            Efinal = Matrix.Square(Efinal);
             var W2t = Matrix.Transponse(W2);
             var E2 = Matrix.MultiplyMatrix(W2t, Efinal);
 
