@@ -28,6 +28,8 @@ namespace NeuronTraining
                 { 0.1, 0.5, 0.6 }  // weights to 3rd neuron
             });
             MatrixConsoleWriter.OutMatrix(W);
+            var WSub = MatrixCalculator.Operation(W, (x) => MatrixCalculator.Sigmoid(x));
+            MatrixConsoleWriter.OutMatrix(WSub);
 
             var X = MatrixCalculator.MultiplyMatrix(W, I);
             var O = MatrixCalculator.ApplySigmoid(X);

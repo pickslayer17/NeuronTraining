@@ -1,4 +1,6 @@
-﻿namespace NeuronTraining
+﻿using System.Xml.Serialization;
+
+namespace NeuronTraining
 {
     public static class MatrixCalculator
     {
@@ -58,6 +60,38 @@
             for (int i = 0; i < inputMatrix.RowCount; i++)
             {
                 result[i, 0] = Sigmoid(inputMatrix[i, 0]); ;
+            }
+
+            return result;
+        }
+
+        public static Matrix<double> Operation(Matrix<double> matrixA, Matrix<double> matrixB, Func<double, double, double> func)
+        {
+            if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.RowCount) throw new Exception("Matrix should be the same size for this operation");
+
+            var result = new Matrix<double>(matrixA.RowCount, matrixB.ColumnCount);
+
+            for (int i = 0; i < matrixA.RowCount; i++)
+            {
+                for (int j = 0; j < matrixA.ColumnCount; j++)
+                {
+                    result[i, j] = func.Invoke(matrixA[i, j], matrixB[i, j]);
+                }
+            }
+
+            return result;
+        }
+
+        public static Matrix<double> Operation(Matrix<double> matrixA, Func<double, double> func)
+        {
+            var result = new Matrix<double>(matrixA.RowCount, matrixA.ColumnCount);
+
+            for (int i = 0; i < matrixA.RowCount; i++)
+            {
+                for (int j = 0; j < matrixA.ColumnCount; j++)
+                {
+                    result[i, j] = func.Invoke(matrixA[i, j]);
+                }
             }
 
             return result;
