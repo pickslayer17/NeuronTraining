@@ -5,9 +5,9 @@
         public const double Exp = 2.71828;
         public const double Alpha = 1;
 
-        public static Matrix Square(Matrix matrixToSquare)
+        public static Matrix<double> Square(Matrix<double> matrixToSquare)
         {
-            var result = new Matrix(matrixToSquare.RowCount, matrixToSquare.ColumnCount);
+            var result = new Matrix<double>(matrixToSquare.RowCount, matrixToSquare.ColumnCount);
 
             for (int i = 0; i < matrixToSquare.RowCount; i++)
             {
@@ -20,9 +20,9 @@
             return result;
         }
 
-        public static Matrix Subtract(Matrix minuend, Matrix subtrahend)
+        public static Matrix<double> Subtract(Matrix<double> minuend, Matrix<double> subtrahend)
         {
-            var result = new Matrix(minuend.RowCount, minuend.ColumnCount);
+            var result = new Matrix<double>(minuend.RowCount, minuend.ColumnCount);
 
             for (int i = 0; i < minuend.RowCount; i++)
             {
@@ -36,9 +36,9 @@
             return result;
         }
 
-        public static Matrix Transponse(Matrix matrixToTransponse)
+        public static Matrix<double> Transponse(Matrix<double> matrixToTransponse)
         {
-            var result = new Matrix(matrixToTransponse.ColumnCount, matrixToTransponse.RowCount);
+            var result = new Matrix<double>(matrixToTransponse.ColumnCount, matrixToTransponse.RowCount);
 
             for (int i = 0; i < matrixToTransponse.RowCount; i++)
             {
@@ -51,9 +51,9 @@
             return result;
         }
 
-        public static Matrix ApplySigmoid(Matrix inputMatrix)
+        public static Matrix<double> ApplySigmoid(Matrix<double> inputMatrix)
         {
-            var result = new Matrix(inputMatrix.RowCount, inputMatrix.ColumnCount);
+            var result = new Matrix<double>(inputMatrix.RowCount, inputMatrix.ColumnCount);
 
             for (int i = 0; i < inputMatrix.RowCount; i++)
             {
@@ -63,64 +63,30 @@
             return result;
         }
 
-        public static Matrix GetMatrixFromArray(double[,] array)
+        public static Matrix<double> MultiplyMatrix(Matrix<double> matrixA, Matrix<double> matrixB)
         {
-            var result = new Matrix(array.GetLength(0), array.GetLength(1));
-            for (int i = 0; i < array.GetLength(0); i++)
+            if (matrixA.ColumnCount != matrixB.RowCount) throw new Exception($"Columns count in A should be equal Row count in B, but was {matrixA.ColumnCount} and {matrixB.RowCount}");
+
+            // Let's start it
+            var rows = matrixA.RowCount;
+            var cols = matrixB.ColumnCount;
+            var result = new Matrix<double>(matrixA.RowCount, matrixB.ColumnCount);
+
+            for (int i = 0; i < rows; i++)
             {
-                for (int j = 0; j < array.GetLength(1); j++)
+                for (int j = 0; j < cols; j++)
                 {
-                    result[i, j] = (double)array.GetValue(i, j);
+                    double resSum = 0;
+                    var rowA = matrixA.GetRow(i);
+                    var colB = matrixB.GetColumn(j);
+                    for (int k = 0; k < rowA.Length; k++)
+                    {
+                        resSum += rowA[k] * colB[k];
+                    }
+
+                    result[i, j] = resSum;
                 }
             }
-
-            return result;
-        }
-
-        public static Matrix MultiplyMatrixSquareOnVertical(Matrix weightsMatrix, Matrix inputMatrix)
-        {
-            var result = new Matrix(inputMatrix.RowCount, inputMatrix.ColumnCount);
-
-            for (int i = 0; i < weightsMatrix.RowCount; i++)
-            {
-                double sum = 0;
-                for (int j = 0; j < weightsMatrix.ColumnCount; j++)
-                {
-                    sum += inputMatrix[j, 0] * weightsMatrix[i, j];
-                }
-
-                result[i, 0] = sum;
-            }
-
-            return result;
-        }
-
-        public static Matrix MultiplyMatrixVerticalOnHorizontal(Matrix vertical, Matrix horizontal)
-        {
-            var result = new Matrix(vertical.RowCount, horizontal.ColumnCount);
-
-            for (int i = 0; i < vertical.RowCount; i++)
-            {
-                for (int j = 0; j < horizontal.ColumnCount; j++)
-                {
-                    result[i, j] = vertical[i, 0] * horizontal[0, j];
-                }
-            }
-
-            return result;
-        }
-
-        public static Matrix DeltaWeights(Matrix error, Matrix sigmoid, Matrix prev)
-        {
-            prev = Transponse(prev);
-
-            var firstPart = new Matrix(error.RowCount, 1);
-            for (int i = 0; i < error.RowCount; i++)
-            {
-                firstPart[i,0] = error[i, 0] * sigmoid[i, 0] * (1 - sigmoid[i, 0]) * Alpha;
-            }
-
-            var result = MultiplyMatrixVerticalOnHorizontal(firstPart, prev);
 
             return result;
         }
