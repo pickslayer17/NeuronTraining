@@ -1,70 +1,7 @@
-﻿using System.Xml.Serialization;
-
-namespace NeuronTraining
+﻿namespace NeuronTraining
 {
     public static class MatrixCalculator
     {
-        public const double Exp = 2.71828;
-        public const double Alpha = 1;
-
-        public static Matrix<double> Square(Matrix<double> matrixToSquare)
-        {
-            var result = new Matrix<double>(matrixToSquare.RowCount, matrixToSquare.ColumnCount);
-
-            for (int i = 0; i < matrixToSquare.RowCount; i++)
-            {
-                for (int j = 0; j < matrixToSquare.ColumnCount; j++)
-                {
-                    result[i, j] = Math.Pow(matrixToSquare[i, j], 2);
-                }
-            }
-
-            return result;
-        }
-
-        public static Matrix<double> Subtract(Matrix<double> minuend, Matrix<double> subtrahend)
-        {
-            var result = new Matrix<double>(minuend.RowCount, minuend.ColumnCount);
-
-            for (int i = 0; i < minuend.RowCount; i++)
-            {
-                for (int j = 0; j < minuend.ColumnCount; j++)
-                {
-                    var diff = minuend[i, j] - subtrahend[i, j];
-                    result[i, j] = diff;
-                }
-            }
-
-            return result;
-        }
-
-        public static Matrix<double> Transponse(Matrix<double> matrixToTransponse)
-        {
-            var result = new Matrix<double>(matrixToTransponse.ColumnCount, matrixToTransponse.RowCount);
-
-            for (int i = 0; i < matrixToTransponse.RowCount; i++)
-            {
-                for (int j = 0; j < matrixToTransponse.ColumnCount; j++)
-                {
-                    result[j, i] = matrixToTransponse[i, j];
-                }
-            }
-
-            return result;
-        }
-
-        public static Matrix<double> ApplySigmoid(Matrix<double> inputMatrix)
-        {
-            var result = new Matrix<double>(inputMatrix.RowCount, inputMatrix.ColumnCount);
-
-            for (int i = 0; i < inputMatrix.RowCount; i++)
-            {
-                result[i, 0] = Sigmoid(inputMatrix[i, 0]); ;
-            }
-
-            return result;
-        }
-
         public static Matrix<double> Operation(Matrix<double> matrixA, Matrix<double> matrixB, Func<double, double, double> func)
         {
             if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.RowCount) throw new Exception("Matrix should be the same size for this operation");
@@ -76,21 +13,6 @@ namespace NeuronTraining
                 for (int j = 0; j < matrixA.ColumnCount; j++)
                 {
                     result[i, j] = func.Invoke(matrixA[i, j], matrixB[i, j]);
-                }
-            }
-
-            return result;
-        }
-
-        public static Matrix<double> Operation(Matrix<double> matrixA, Func<double, double> func)
-        {
-            var result = new Matrix<double>(matrixA.RowCount, matrixA.ColumnCount);
-
-            for (int i = 0; i < matrixA.RowCount; i++)
-            {
-                for (int j = 0; j < matrixA.ColumnCount; j++)
-                {
-                    result[i, j] = func.Invoke(matrixA[i, j]);
                 }
             }
 
@@ -123,14 +45,6 @@ namespace NeuronTraining
             }
 
             return result;
-        }
-
-        public static double Sigmoid(double x)
-        {
-            var divider = 1 + Math.Pow(Exp, -x);
-            var result = 1 / divider;
-
-            return Math.Round(result, 10);
         }
     }
 }

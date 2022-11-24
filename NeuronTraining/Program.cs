@@ -6,68 +6,72 @@ namespace NeuronTraining
     {
         public static void Main(string[] args)
         {
-            Example1();
+            Example2();
         }
 
-
-
-        public static void Example1()
+        public static void Example2()
         {
-            var I = new Matrix<double>(new double[,]
-            {
-                { 0.9 }, // input on 1st
-                { 0.1 }, // input on 2nd
-                { 0.8 }  // input on 3rd
-            });
-            MatrixConsoleWriter.OutMatrix(I);
+            var i_nodes = 3;
+            var h_nodes = 3;
+            var o_nodes = 3;
+            var l_rate = 0.2;
 
-            var W = new Matrix<double>(new double[,]
-            {
-                { 0.9, 0.3, 0.4 }, // weights to 1st neuron
-                { 0.2, 0.8, 0.2 }, // weights to 2nd neuron
-                { 0.1, 0.5, 0.6 }  // weights to 3rd neuron
-            });
-            MatrixConsoleWriter.OutMatrix(W);
-            var WSub = MatrixCalculator.Operation(W, (x) => MatrixCalculator.Sigmoid(x));
-            MatrixConsoleWriter.OutMatrix(WSub);
-
-            var X = MatrixCalculator.MultiplyMatrix(W, I);
-            var O = MatrixCalculator.ApplySigmoid(X);
-
-            var W2 = new Matrix<double>(new double[,]
-            {
-                { 0.3, 0.7, 0.5 },
-                { 0.6, 0.5, 0.2 },
-                { 0.8, 0.1, 0.9 }
-            });
-            MatrixConsoleWriter.OutMatrix(W2);
-
-            var X2 = MatrixCalculator.MultiplyMatrix(W2, O);
-            var O2 = MatrixCalculator.ApplySigmoid(X2);
-
-            //--------------------------
-            // Final etalon output
-            var T = new Matrix<double>(new double[,]
-            {
-                { 1 },
-                { 0 },
-                { 0 }
-            });
+            var neuralNetwork = new NeuralNetwork(i_nodes, h_nodes, o_nodes, l_rate);
+            var query = neuralNetwork.Query(new double[] { 0.5, 0.2, 0.8 });
+            MatrixConsoleWriter.OutMatrix(neuralNetwork.WeightsHiddenOutput);
+            MatrixConsoleWriter.OutMatrix(neuralNetwork.WeightsInputHidden);
 
 
+            //data_file = open("csv/mnist_train.csv", 'r')
+            //data_list = data_file.readlines()
+            //data_file.close()
 
-            Console.WriteLine("first output");
-            MatrixConsoleWriter.OutMatrix(X);
-            Console.WriteLine("---------------");
-            Console.WriteLine("first output (Sigmoid)");
-            MatrixConsoleWriter.OutMatrix(O);
-            Console.WriteLine("---------------");
-            Console.WriteLine("Final output");
-            MatrixConsoleWriter.OutMatrix(X2);
-            Console.WriteLine("---------------");
-            Console.WriteLine("Final output (Sigmoid)");
-            MatrixConsoleWriter.OutMatrix(O2);
+            //begin_time = datetime.datetime.now()
 
+            //epochs = 1
+
+            //for n in range(epochs):
+            //    for record in data_list:
+            //        all_values = record.split(',')
+            //        inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+            //        targets = numpy.zeros(o_nodes) + 0.01
+            //        targets[int(all_values[0])] = 0.99
+            //        neural_network.train(inputs, targets)
+            //        pass
+            //    pass
+
+            //data_file = open("csv/mnist_test.csv", 'r')
+            //data_list = data_file.readlines()
+            //data_file.close()
+
+            //scorecard = []
+            //for record in data_list:
+            //    all_values = record.split(',')
+            //    correct_label = int(all_values[0])
+            //    inputs = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+            //    outputs = neural_network.query(inputs)
+            //    label = numpy.argmax(outputs)
+            //    print(correct_label, "истинный маркер", label, "ответ сети")
+            //    if (label == correct_label):
+            //        scorecard.append(1)
+            //    else:
+            //        scorecard.append(0)
+            //    pass
+            //print(scorecard)
+            //scorecard_array = numpy.asarray(scorecard)
+            //print("эффективность = ", scorecard_array.sum() / scorecard_array.size)
+
+            //print(datetime.datetime.now() - begin_time)
+
+            //label = 3
+            //targets = numpy.zeros(o_nodes) + 0.01
+            //targets[label] = 0.99
+            //print("targets", targets)
+            //image_data = neural_network.backquery(targets)
+            //print(image_data)
+            //plt.imshow(image_data.reshape(28, 28), cmap = 'Greys', interpolation = 'nearest')
+            //plt.show()
+            //pass
         }
     }
 }

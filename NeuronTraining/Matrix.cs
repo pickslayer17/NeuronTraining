@@ -62,6 +62,69 @@ namespace NeuronTraining
             return result;
         }
 
+        public Matrix<T> Transponse()
+        {
+            var result = new Matrix<T>(ColumnCount, RowCount);
+
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    result[j, i] = _matrix[i][j];
+                }
+            }
+
+            return result;
+        }
+
+        public void Fill(T value)
+        {
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    _matrix[i][j] = value;
+                }
+            }
+        }
+
+        public void FillFunc(Func<T> func)
+        {
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    _matrix[i][j] = func.Invoke();
+                }
+            }
+        }
+
+        public Matrix<T> Operation(Func<T, T> func)
+        {
+            var result = new Matrix<T>(RowCount, ColumnCount);
+
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    result[i, j] = func.Invoke(_matrix[i][j]);
+                }
+            }
+
+            return result;
+        }
+
+        public static Matrix<T> ConvertArrayToOneDimMatrix(T[] array)
+        {
+            var result = new Matrix<T>(1, array.Length);
+            for (int i = 0; i < array.Length; i++)
+            {
+                result[0, i] = array[i];
+            }
+
+            return result;
+        }
+
         private T GetCell(int row, int column)
         {
             return _matrix[row][column];
