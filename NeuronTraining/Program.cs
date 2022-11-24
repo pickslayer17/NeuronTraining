@@ -4,6 +4,16 @@
     {
         public static void Main(string[] args)
         {
+            Example1();
+        }
+
+        public static void Example2()
+        {
+
+        }
+
+        public static void Example1()
+        {
             var I = MatrixCalculator.GetMatrixFromArray(new double[,]
             {
                 { 0.9 }, // input on 1st
@@ -18,7 +28,7 @@
                 { 0.1, 0.5, 0.6 }  // weights to 3rd neuron
             });
 
-            var X = MatrixCalculator.MultiplyMatrix(W, I);
+            var X = MatrixCalculator.MultiplyMatrixSquareOnVertical(W, I);
             var O = MatrixCalculator.ApplySigmoid(X);
 
             var W2 = MatrixCalculator.GetMatrixFromArray(new double[,]
@@ -28,7 +38,7 @@
                 { 0.8, 0.1, 0.9 }
             });
 
-            var X2 = MatrixCalculator.MultiplyMatrix(W2, O);
+            var X2 = MatrixCalculator.MultiplyMatrixSquareOnVertical(W2, O);
             var O2 = MatrixCalculator.ApplySigmoid(X2);
 
             //--------------------------
@@ -40,10 +50,12 @@
                 { 0 }
             });
 
+            // Error
             var Efinal = MatrixCalculator.Subtract(T, O2);
-            Efinal = MatrixCalculator.Square(Efinal);
-            var W2t = MatrixCalculator.Transponse(W2);
-            var E2 = MatrixCalculator.MultiplyMatrix(W2t, Efinal);
+
+            var DeltaWeightsW2 = MatrixCalculator.DeltaWeights(Efinal, O2, O);
+            var newW2 = MatrixCalculator.Subtract(W2, DeltaWeightsW2);
+
 
             Console.WriteLine("first output");
             MatrixConsoleWriter.OutMatrix(X);
@@ -60,11 +72,11 @@
             Console.WriteLine("Error final layer");
             MatrixConsoleWriter.OutMatrix(Efinal);
             Console.WriteLine("---------------");
-            Console.WriteLine("Transposed W2");
-            MatrixConsoleWriter.OutMatrix(W2t);
+            Console.WriteLine("Delta Weights");
+            MatrixConsoleWriter.OutMatrix(DeltaWeightsW2);
             Console.WriteLine("---------------");
-            Console.WriteLine("Erros E2");
-            MatrixConsoleWriter.OutMatrix(E2);
+            Console.WriteLine("New W2");
+            MatrixConsoleWriter.OutMatrix(newW2);
         }
     }
 }

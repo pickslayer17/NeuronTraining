@@ -3,6 +3,7 @@
     public static class MatrixCalculator
     {
         public const double Exp = 2.71828;
+        public const double Alpha = 1;
 
         public static Matrix Square(Matrix matrixToSquare)
         {
@@ -56,8 +57,7 @@
 
             for (int i = 0; i < inputMatrix.RowCount; i++)
             {
-                var sigmoidRes = Sigmoid(inputMatrix[i, 0]);
-                result[i, 0] = sigmoidRes;
+                result[i, 0] = Sigmoid(inputMatrix[i, 0]); ;
             }
 
             return result;
@@ -77,7 +77,7 @@
             return result;
         }
 
-        public static Matrix MultiplyMatrix(Matrix weightsMatrix, Matrix inputMatrix)
+        public static Matrix MultiplyMatrixSquareOnVertical(Matrix weightsMatrix, Matrix inputMatrix)
         {
             var result = new Matrix(inputMatrix.RowCount, inputMatrix.ColumnCount);
 
@@ -91,6 +91,36 @@
 
                 result[i, 0] = sum;
             }
+
+            return result;
+        }
+
+        public static Matrix MultiplyMatrixVerticalOnHorizontal(Matrix vertical, Matrix horizontal)
+        {
+            var result = new Matrix(vertical.RowCount, horizontal.ColumnCount);
+
+            for (int i = 0; i < vertical.RowCount; i++)
+            {
+                for (int j = 0; j < horizontal.ColumnCount; j++)
+                {
+                    result[i, j] = vertical[i, 0] * horizontal[0, j];
+                }
+            }
+
+            return result;
+        }
+
+        public static Matrix DeltaWeights(Matrix error, Matrix sigmoid, Matrix prev)
+        {
+            prev = Transponse(prev);
+
+            var firstPart = new Matrix(error.RowCount, 1);
+            for (int i = 0; i < error.RowCount; i++)
+            {
+                firstPart[i,0] = error[i, 0] * sigmoid[i, 0] * (1 - sigmoid[i, 0]) * Alpha;
+            }
+
+            var result = MultiplyMatrixVerticalOnHorizontal(firstPart, prev);
 
             return result;
         }
