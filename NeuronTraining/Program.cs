@@ -14,13 +14,21 @@ namespace NeuronTraining
             var i_nodes = 3;
             var h_nodes = 3;
             var o_nodes = 3;
-            var l_rate = 0.2;
+            var l_rate = 1;
+
+            var inputs = new double[] { 0.5, 0.2, 0.8 };
+            var targets = new double[] { 0, 1, 0 };
 
             var neuralNetwork = new NeuralNetwork(i_nodes, h_nodes, o_nodes, l_rate);
             var query = neuralNetwork.Query(new double[] { 0.5, 0.2, 0.8 });
-            MatrixConsoleWriter.OutMatrix(neuralNetwork.WeightsHiddenOutput);
-            MatrixConsoleWriter.OutMatrix(neuralNetwork.WeightsInputHidden);
-
+            MatrixConsoleWriter.OutMatrix(query);
+            for (int i = 0; i < 100; i++)
+            {
+                neuralNetwork.Train(inputs, targets);
+            }
+            
+            query = neuralNetwork.Query(new double[] { 0.5, 0.2, 0.8 });
+            MatrixConsoleWriter.OutMatrix(query);
 
             //data_file = open("csv/mnist_train.csv", 'r')
             //data_list = data_file.readlines()

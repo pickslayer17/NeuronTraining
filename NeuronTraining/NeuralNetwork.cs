@@ -30,41 +30,51 @@ namespace NeuronTraining
 
 			//self.activation_function = lambda x: scipy.special.expit(x)
 			// Sigmoid()
-
 			//self.inverse_activation_function = lambda x: scipy.special.logit(x)
 			///todo
 		}
 
 		public void Train(double[] inputsList, double[] targestList)
 		{
-		//	inputs = numpy.array(inputs_list, ndmin = 2).T
+			//	inputs = numpy.array(inputs_list, ndmin = 2).T
+			var inputs = Matrix<double>.ConvertArrayToOneDimMatrix(inputsList).Transponse();
+			//targets = numpy.array(targets_list, ndmin = 2).T
+			var targets = Matrix<double>.ConvertArrayToOneDimMatrix(targestList).Transponse();
 
-		//targets = numpy.array(targets_list, ndmin = 2).T
+            #region TheSameAsInQuery
+            // hidden_inputs = numpy.dot(self.weights_input_hidden, inputs)
+            var hiddenInputs = MatrixCalculator.MultiplyMatrix(WeightsInputHidden, inputs);
+			// hidden_outputs = self.activation_function(hidden_inputs)
+			var hiddenOutputs = hiddenInputs.Operation(x => Sigmoid(x));
+			// final_inputs = numpy.dot(self.weights_hidden_output, hidden_outputs)
+			var finalInputs = MatrixCalculator.MultiplyMatrix(WeightsHiddenOutput, hiddenOutputs);
+			// final_outputs = self.activation_function(final_inputs)
+			var finalOutputs = finalInputs.Operation(x => Sigmoid(x));
+			#endregion
 
-		//# The same as in query
-		//	hidden_inputs = numpy.dot(self.weights_input_hidden, inputs)
+			//# Error output layer
+			//	output_errors = targets - final_outputs
+			var outputErrors = targets - finalOutputs;
+            // # Error hidden layer, распределенные пропроционально весовым коэффициентам связей
+            //# и рекомбинированные на скрытых узлах
+            //      hidden_errors = numpy.dot(self.weights_hidden_output.T, output_errors)
+			var hiddenErrors = MatrixCalculator.MultiplyMatrix(WeightsHiddenOutput.Transponse(), outputErrors);
 
-		//hidden_outputs = self.activation_function(hidden_inputs)
+			//# renew weights for hidden-output layer
+			//	self.weights_hidden_output += self.learning_rate * numpy.dot(
+			//	(output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
+			WeightsHiddenOutput += MatrixCalculator.MultiplyMatrix(
+				outputErrors * finalOutputs * finalOutputs.Operation(x => 1.0 - x),
+				hiddenOutputs.Transponse()) * LearningRate;
 
-		//final_inputs = numpy.dot(self.weights_hidden_output, hidden_outputs)
-
-		//final_outputs = self.activation_function(final_inputs)
-
-		//# Error output layer
-		//	output_errors = targets - final_outputs
-  //      # Error hidden layer, распределенные пропроционально весовым коэффициентам связей
-  //      # и рекомбинированные на скрытых узлах
-  //      hidden_errors = numpy.dot(self.weights_hidden_output.T, output_errors)
-
-		//# renew weights for hidden-output layer
-		//	self.weights_hidden_output += self.learning_rate * numpy.dot(
-		//	(output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
-
-		//self.weights_input_hidden += self.learning_rate * numpy.dot(
-		//	(hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), numpy.transpose(inputs))
+			//self.weights_input_hidden += self.learning_rate * numpy.dot(
+			//	(hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), numpy.transpose(inputs))
+			WeightsInputHidden += MatrixCalculator.MultiplyMatrix(
+				hiddenErrors * hiddenOutputs * hiddenOutputs.Operation(x => 1.0 - x),
+				inputs.Transponse()) * LearningRate;
 		}
 
-		public Matrix<double> Query(double[] inputsList)
+        public Matrix<double> Query(double[] inputsList)
         {
 			//	inputs = numpy.array(inputs_list, ndmin = 2).T
 			var inputs = Matrix<double>.ConvertArrayToOneDimMatrix(inputsList).Transponse();

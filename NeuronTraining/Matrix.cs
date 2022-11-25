@@ -125,6 +125,73 @@ namespace NeuronTraining
             return result;
         }
 
+        public static Matrix<T> operator +(Matrix<T> matrixA, Matrix<T> matrixB)
+        {
+            if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.ColumnCount) throw new Exception("Matrix should be the same size for this operation");
+
+            var result = new Matrix<T>(matrixA.RowCount, matrixA.ColumnCount);
+
+            for (int i = 0; i < matrixA.RowCount; i++)
+            {
+                for (int j = 0; j < matrixA.ColumnCount; j++)
+                {
+                    result[i, j] = (dynamic)matrixA[i, j] + (dynamic)matrixB[i, j];
+                }
+            }
+
+            return result;
+        }
+
+        public static Matrix<T> operator *(Matrix<T> matrixA, T value)
+        {
+            var result = new Matrix<T>(matrixA.RowCount, matrixA.ColumnCount);
+
+            for (int i = 0; i < matrixA.RowCount; i++)
+            {
+                for (int j = 0; j < matrixA.ColumnCount; j++)
+                {
+                    result[i, j] = (dynamic)matrixA[i, j] * (dynamic)value;
+                }
+            }
+
+            return result;
+        }
+
+        public static Matrix<T> operator *(Matrix<T> matrixA, Matrix<T> matrixB)
+        {
+            if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.ColumnCount) throw new Exception("Matrix should be the same size for this operation");
+
+            var result = new Matrix<T>(matrixA.RowCount, matrixA.ColumnCount);
+
+            for (int i = 0; i < matrixA.RowCount; i++)
+            {
+                for (int j = 0; j < matrixA.ColumnCount; j++)
+                {
+                    result[i, j] = (dynamic)matrixA[i, j] * (dynamic)matrixB[i, j];
+                }
+            }
+
+            return result;
+        }
+
+        public static Matrix<T> operator -(Matrix<T> matrixA, Matrix<T> matrixB)
+        {
+            
+            if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.ColumnCount) throw new Exception("Matrix should be the same size for this operation");
+
+            var result = new Matrix<T>(matrixA.RowCount, matrixA.ColumnCount);
+
+            for (int i = 0; i < matrixA.RowCount; i++)
+            {
+                for (int j = 0; j < matrixA.ColumnCount; j++)
+                {
+                    result[i, j] = (dynamic)matrixA[i, j] - (dynamic)matrixB[i, j];
+                }
+            }
+
+            return result;
+        }
+
         private T GetCell(int row, int column)
         {
             return _matrix[row][column];
