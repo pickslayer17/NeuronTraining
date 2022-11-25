@@ -11,39 +11,14 @@ namespace NeuronTraining
 
         public static void Example2()
         {
-            var i_nodes = 3;
-            var h_nodes = 3;
-            var o_nodes = 3;
-            var l_rate = 1;
+            var test10FileName = "mnist_test_10.csv";
+            var testFileName = "mnist_test.csv";
+            var trainFileName = "mnist_train.csv";
 
-            //var ar = Enumerable.Range(0, i_nodes).Select(x => x + 0.2).ToArray();
-            var inputs = new double[] { 0.5, 0.2, 0.8 };
-            var targets = new double[] { 0, 1, 0 };// new double[] { 0, 1, 0, 0,0,0,0,0,0,0 };
-
-            var neuralNetwork = new NeuralNetwork(i_nodes, h_nodes, o_nodes, l_rate);
-            var query = neuralNetwork.Query(inputs);
-            for (int i = 0; i < query.Length; i++)
-            {
-                Console.WriteLine($"[{query[i]}]");
-            }
-            for (int i = 0; i < 1000; i++)
-            {
-                neuralNetwork.Train(inputs, targets);
-            }
-
-            query = neuralNetwork.Query(inputs);
-            for (int i = 0; i < query.Length; i++)
-            {
-                Console.WriteLine($"[{query[i]}]");
-            }
-            //data_file = open("csv/mnist_train.csv", 'r')
-            //data_list = data_file.readlines()
-            //data_file.close()
-
-            //begin_time = datetime.datetime.now()
+            var reader = new CsvReader();
+            reader.ReadFile(trainFileName);
 
             //epochs = 1
-
             //for n in range(epochs):
             //    for record in data_list:
             //        all_values = record.split(',')
@@ -53,6 +28,31 @@ namespace NeuronTraining
             //        neural_network.train(inputs, targets)
             //        pass
             //    pass
+            var i_nodes = 784;
+            var h_nodes = 10;
+            var o_nodes = 10;
+            var l_rate = 0.3;
+            var neuralNetwork = new NeuralNetwork(i_nodes, h_nodes, o_nodes, l_rate);
+
+            var epochs = 1;
+            for (int i = 0; i < epochs; i++)
+            {
+                foreach (var item in reader.Csv)
+                {
+                    var number = item.Key;
+                    var inputs = item.Value.Select(x => ((double)x / 255 * 0.99) + 0.01).ToArray();
+                    var targets =  Enumerable.Range(0, o_nodes).Select(x => 0.01).ToArray();
+                    targets[number] = 0.99;
+                    neuralNetwork.Train(inputs, targets);
+
+                    //var result = neuralNetwork.Query(inputs);
+                    //for (int k = 0; k < result.Length; k++)
+                    //{
+                    //    Console.WriteLine(result[k]);
+                    //}
+
+                }
+            }
 
             //data_file = open("csv/mnist_test.csv", 'r')
             //data_list = data_file.readlines()
