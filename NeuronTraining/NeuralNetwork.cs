@@ -1,11 +1,11 @@
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 
 namespace NeuronTraining
 {
 	public class NeuralNetwork
 	{
 		public const double Exp = 2.71828;
-		public const double Alpha = 1;
 
 		private int InputNodesCount { get; }
 		private int HiddenNodesCount { get; }
@@ -20,7 +20,7 @@ namespace NeuronTraining
 			HiddenNodesCount = hNodesCount;
 			OuptutNodesCount = oNodesCount;
 			LearningRate = lRate;
-			
+
 			//	self.weights_input_hidden = numpy.random.normal(0.0, pow(self.hidden_nodes, -0.5), (self.hidden_nodes, self.input_nodes))
 			WeightsInputHidden = new Matrix<double>(hNodesCount, iNodesCount);
 			WeightsInputHidden.FillFunc(() => new Random().NextDouble() - 0.5); //Math.Pow(200, -0.5)
@@ -31,7 +31,8 @@ namespace NeuronTraining
 			//self.activation_function = lambda x: scipy.special.expit(x)
 			// Sigmoid()
 			//self.inverse_activation_function = lambda x: scipy.special.logit(x)
-			///todo
+			//The logit function is defined as logit(p) = log(p / (1 - p)).Note that logit(0) = -inf, logit(1) = inf, and logit(p) for p < 0 or p > 1 yields nan.
+			// Logit();
 		}
 
 		public void Train(double[] inputsList, double[] targestList)
@@ -74,7 +75,7 @@ namespace NeuronTraining
 				inputs.Transponse()) * LearningRate;
 		}
 
-        public Matrix<double> Query(double[] inputsList)
+        public double[] Query(double[] inputsList)
         {
 			//	inputs = numpy.array(inputs_list, ndmin = 2).T
 			var inputs = Matrix<double>.ConvertArrayToOneDimMatrix(inputsList).Transponse();
@@ -88,44 +89,48 @@ namespace NeuronTraining
 			var finalOutputs = finalInputs.Operation(x => Sigmoid(x));
 
 			//return final_outputs
-			return finalOutputs;
+			return finalOutputs.ToArray();
         }
 
 		public double[] BackQuery(double[] targetsList)
         {
-//# transpose the targets list to a vertical array
-//			final_outputs = numpy.array(targets_list, ndmin = 2).T
+			// final_outputs = numpy.array(targets_list, ndmin = 2).T
+			var finalOutputs = Matrix<double>.ConvertArrayToOneDimMatrix(targetsList).Transponse();
+            // final_inputs = self.inverse_activation_function(final_outputs)
+			var finalInputs = finalOutputs.Operation(x => Logit(x));
+			// hidden_outputs = numpy.dot(self.weights_hidden_output.T, final_inputs)
+			var hiddenOutputs = MatrixCalculator.MultiplyMatrix(WeightsHiddenOutput.Transponse(), finalInputs);
 
-//		# calculate the signal into the final output layer
-//			final_inputs = self.inverse_activation_function(final_outputs)
+			// # scale them back to 0.01 to .99
+			// hidden_outputs -= numpy.min(hidden_outputs)
+			hiddenOutputs -= (dynamic)hiddenOutputs.Min();
+            //hidden_outputs /= numpy.max(hidden_outputs)
+			hiddenOutputs /= (dynamic)hiddenOutputs.Max();
+			// hidden_outputs *= 0.98
+			hiddenOutputs *= 0.98;
+			// hidden_outputs += 0.01
+			hiddenOutputs += 0.01;
 
-//		# calculate the signal out of the hidden layer
-//			hidden_outputs = numpy.dot(self.weights_hidden_output.T, final_inputs)
-//        # scale them back to 0.01 to .99
-//        hidden_outputs -= numpy.min(hidden_outputs)
+            // # calculate the signal into the hidden layer
+            // hidden_inputs = self.inverse_activation_function(hidden_outputs)
+			var hiddenInputs = hiddenOutputs.Operation(x => Logit(x));
 
-//		hidden_outputs /= numpy.max(hidden_outputs)
+			// # calculate the signal out of the input layer
+			// inputs = numpy.dot(self.weights_input_hidden.T, hidden_inputs)
+			var inputs = MatrixCalculator.MultiplyMatrix(WeightsInputHidden.Transponse(), hiddenInputs);
 
-//		hidden_outputs *= 0.98
+            // # scale them back to 0.01 to .99
+            // inputs -= numpy.min(inputs)
+			inputs -= (dynamic)inputs.Min();
+            // inputs /= numpy.max(inputs)
+			inputs /= (dynamic)inputs.Max();
+			// inputs *= 0.98
+			inputs *= 0.98;
+			// inputs += 0.01
+			inputs += 0.01;
+            // return inputs
 
-//		hidden_outputs += 0.01
-
-//		# calculate the signal into the hidden layer
-//			hidden_inputs = self.inverse_activation_function(hidden_outputs)
-
-//		# calculate the signal out of the input layer
-//			inputs = numpy.dot(self.weights_input_hidden.T, hidden_inputs)
-//        # scale them back to 0.01 to .99
-//        inputs -= numpy.min(inputs)
-
-//		inputs /= numpy.max(inputs)
-
-//		inputs *= 0.98
-
-//		inputs += 0.01
-
-//		return inputs
-			return null;
+            return inputs.ToArray();
         }
 
 		public double Sigmoid(double x)
@@ -135,5 +140,10 @@ namespace NeuronTraining
 
 			return Math.Round(result, 10);
 		}
+
+		public double Logit(double x)
+		{
+			return Math.Log(x / (1 - x));
+        }
 	}
 }

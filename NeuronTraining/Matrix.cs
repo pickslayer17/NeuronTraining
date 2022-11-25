@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NeuronTraining
+﻿namespace NeuronTraining
 {
     public class Matrix<T>
     {
@@ -62,6 +60,42 @@ namespace NeuronTraining
             return result;
         }
 
+        public T Min()
+        {
+            T result = _matrix[0][0];
+
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    if (_matrix[i][j] < (dynamic)result)
+                    {
+                        result = _matrix[i][j];
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public T Max()
+        {
+            T result = _matrix[0][0];
+
+            for (int i = 0; i < RowCount; i++)
+            {
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    if (_matrix[i][j] > (dynamic)result)
+                    {
+                        result = _matrix[i][j];
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public Matrix<T> Transponse()
         {
             var result = new Matrix<T>(ColumnCount, RowCount);
@@ -114,12 +148,53 @@ namespace NeuronTraining
             return result;
         }
 
+        public T[] ToArray(bool vertical = true)
+        {
+            if (RowCount > 1 && ColumnCount > 1) throw new Exception("Only 1 stroke matrix could be turned into array");
+
+            T[] result;
+
+            if (vertical)
+            {
+                result = new T[RowCount];
+                for (int i = 0; i < RowCount; i++)
+                {
+                    result[i] = _matrix[i][0];
+                }
+            }
+            else
+            {
+                result = new T[ColumnCount];
+                for (int i = 0; i < RowCount; i++)
+                {
+                    result[i] = _matrix[0][i];
+                }
+            }
+
+            return result;
+        }
+
         public static Matrix<T> ConvertArrayToOneDimMatrix(T[] array)
         {
             var result = new Matrix<T>(1, array.Length);
             for (int i = 0; i < array.Length; i++)
             {
                 result[0, i] = array[i];
+            }
+
+            return result;
+        }
+
+        public static Matrix<T> operator +(Matrix<T> matrixA, T value)
+        {
+            var result = new Matrix<T>(matrixA.RowCount, matrixA.ColumnCount);
+
+            for (int i = 0; i < matrixA.RowCount; i++)
+            {
+                for (int j = 0; j < matrixA.ColumnCount; j++)
+                {
+                    result[i, j] = (dynamic)matrixA[i, j] + (dynamic)value;
+                }
             }
 
             return result;
@@ -176,7 +251,7 @@ namespace NeuronTraining
 
         public static Matrix<T> operator -(Matrix<T> matrixA, Matrix<T> matrixB)
         {
-            
+
             if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.ColumnCount) throw new Exception("Matrix should be the same size for this operation");
 
             var result = new Matrix<T>(matrixA.RowCount, matrixA.ColumnCount);
