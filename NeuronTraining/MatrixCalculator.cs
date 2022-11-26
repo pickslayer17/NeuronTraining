@@ -2,11 +2,11 @@
 {
     public static class MatrixCalculator
     {
-        public static Matrix<double> Operation(Matrix<double> matrixA, Matrix<double> matrixB, Func<double, double, double> func)
+        public static Matrix Operation(Matrix matrixA, Matrix matrixB, Func<double, double, double> func)
         {
             if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.RowCount) throw new Exception("Matrix should be the same size for this operation");
 
-            var result = new Matrix<double>(matrixA.RowCount, matrixB.ColumnCount);
+            var result = new Matrix(matrixA.RowCount, matrixB.ColumnCount);
 
             for (int i = 0; i < matrixA.RowCount; i++)
             {
@@ -19,28 +19,24 @@
             return result;
         }
 
-        public static Matrix<double> MultiplyMatrix(Matrix<double> matrixA, Matrix<double> matrixB)
+        public static Matrix MultiplyMatrix(Matrix matrixA, Matrix matrixB)
         {
             if (matrixA.ColumnCount != matrixB.RowCount) throw new Exception($"Columns count in A should be equal Row count in B, but was {matrixA.ColumnCount} and {matrixB.RowCount}");
 
             // Let's start it
             var rows = matrixA.RowCount;
             var cols = matrixB.ColumnCount;
-            var result = new Matrix<double>(matrixA.RowCount, matrixB.ColumnCount);
+            var result = new Matrix(matrixA.RowCount, matrixB.ColumnCount);
 
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    double resSum = 0;
-                    var rowA = matrixA.GetRow(i);
-                    var colB = matrixB.GetColumn(j);
-                    for (int k = 0; k < rowA.Length; k++)
+                    result[i, j] = 0;
+                    for (int k = 0; k < matrixA.ColumnCount; k++)
                     {
-                        resSum += rowA[k] * colB[k];
+                        result[i, j] += matrixA[i, k] * matrixB[k, j];
                     }
-
-                    result[i, j] = resSum;
                 }
             }
 

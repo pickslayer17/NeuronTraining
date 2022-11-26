@@ -2,7 +2,7 @@
 {
     public static class MatrixConsoleWriter
     {
-        public static void OutMatrix<T>(Matrix<T> matrixToOut)
+        public static void OutMatrix(Matrix matrixToOut)
         {
             for (int i = 0; i < matrixToOut.RowCount; i++)
             {
