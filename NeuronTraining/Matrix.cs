@@ -13,13 +13,13 @@
 
         public Matrix(int rowsCount, int columnsCount)
         {
-            _matrix = new double[rowsCount][];
             RowCount = rowsCount;
             ColumnCount = columnsCount;
+            _matrix = new double[RowCount][];
 
-            for (int i = 0; i < rowsCount; i++)
+            for (int i = 0; i < RowCount; i++)
             {
-                _matrix[i] = new double[columnsCount];
+                _matrix[i] = new double[ColumnCount];
             }
         }
 
@@ -124,7 +124,7 @@
 
         public double[] ToArray(bool vertical = true)
         {
-            if (RowCount > 1 && ColumnCount > 1) throw new Exception("Only 1 stroke matrix could be turned into array");
+            if (RowCount > 1 && ColumnCount > 1) throw new Exception("Only single line matrix could be turned into array");
 
             double[] result;
 
@@ -139,7 +139,7 @@
             else
             {
                 result = new double[ColumnCount];
-                for (int i = 0; i < RowCount; i++)
+                for (int i = 0; i < ColumnCount; i++)
                 {
                     result[i] = _matrix[0][i];
                 }

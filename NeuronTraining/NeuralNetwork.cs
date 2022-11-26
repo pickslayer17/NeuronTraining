@@ -4,9 +4,9 @@ namespace NeuronTraining
 	{
 		public const double Exp = 2.71828;
 
-		private int InputNodesCount { get; }
-		private int HiddenNodesCount { get; }
-		private int OuptutNodesCount { get; }
+		public int InputNodesCount { get; }
+		public int HiddenNodesCount { get; }
+		public int OuptutNodesCount { get; }
 		private double LearningRate { get; }
 		public Matrix WeightsInputHidden;
 		public Matrix WeightsHiddenOutput;
@@ -36,40 +36,46 @@ namespace NeuronTraining
 
 		public void Train(double[] inputsList, double[] targestList)
 		{
+			var time = DateTime.Now;
 			//	inputs = numpy.array(inputs_list, ndmin = 2).T
 			var inputs = Matrix.ConvertArrayToOneLineMatrix(inputsList).Transpose();
 			//targets = numpy.array(targets_list, ndmin = 2).T
 			var targets = Matrix.ConvertArrayToOneLineMatrix(targestList).Transpose();
-			#region TheSameAsInQuery
-			// hidden_inputs = numpy.dot(self.weights_input_hidden, inputs)
-			var hiddenInputs = MatrixCalculator.MultiplyMatrix(WeightsInputHidden, inputs);
+            var time1 = DateTime.Now;
+            #region TheSameAsInQuery
+            // hidden_inputs = numpy.dot(self.weights_input_hidden, inputs)
+            var hiddenInputs = MatrixCalculator.MultiplyMatrix(WeightsInputHidden, inputs);
 			// hidden_outputs = self.activation_function(hidden_inputs)
 			var hiddenOutputs = hiddenInputs.Operation(x => Sigmoid(x));
 			// final_inputs = numpy.dot(self.weights_hidden_output, hidden_outputs)
 			var finalInputs = MatrixCalculator.MultiplyMatrix(WeightsHiddenOutput, hiddenOutputs);
 			// final_outputs = self.activation_function(final_inputs)
 			var finalOutputs = finalInputs.Operation(x => Sigmoid(x));
-			#endregion
-			//# Error output layer
-			//	output_errors = targets - final_outputs
-			var outputErrors = targets - finalOutputs;
+            #endregion
+            var time2 = DateTime.Now;
+            //# Error output layer
+            //	output_errors = targets - final_outputs
+            var outputErrors = targets - finalOutputs;
 			// # Error hidden layer, распределенные пропроционально весовым коэффициентам связей
 			//# и рекомбинированные на скрытых узлах
 			//      hidden_errors = numpy.dot(self.weights_hidden_output.T, output_errors)
 			var hiddenErrors = MatrixCalculator.MultiplyMatrix(WeightsHiddenOutput.Transpose(), outputErrors);
-			//# renew weights for hidden-output layer
-			//	self.weights_hidden_output += self.learning_rate * numpy.dot(
-			//	(output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
-			WeightsHiddenOutput += MatrixCalculator.MultiplyMatrix(
+            var time3 = DateTime.Now;
+            //# renew weights for hidden-output layer
+            //	self.weights_hidden_output += self.learning_rate * numpy.dot(
+            //	(output_errors * final_outputs * (1.0 - final_outputs)), numpy.transpose(hidden_outputs))
+            WeightsHiddenOutput += MatrixCalculator.MultiplyMatrix(
 				(outputErrors * finalOutputs * (1.0 - finalOutputs)),
 				hiddenOutputs.Transpose()) * LearningRate;
-
-			//self.weights_input_hidden += self.learning_rate * numpy.dot(
-			//	(hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), numpy.transpose(inputs))
-			WeightsInputHidden += MatrixCalculator.MultiplyMatrix(
+            var time4 = DateTime.Now;
+            //self.weights_input_hidden += self.learning_rate * numpy.dot(
+            //	(hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), numpy.transpose(inputs))
+            WeightsInputHidden += MatrixCalculator.MultiplyMatrix(
 				hiddenErrors * hiddenOutputs * (1.0 - hiddenOutputs),
 				inputs.Transpose()) * LearningRate;
-		}
+            var time5 = DateTime.Now;
+			var a = true;
+        }
 
 		public double[] Query(double[] inputsList)
 		{

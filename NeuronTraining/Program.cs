@@ -1,9 +1,4 @@
-﻿
-
-using System.Reflection.Emit;
-using System.Reflection.PortableExecutable;
-
-namespace NeuronTraining
+﻿namespace NeuronTraining
 {
     public class Program
     {
@@ -11,17 +6,15 @@ namespace NeuronTraining
         public const string TestFileName = "mnist_test.csv";
         public const string TrainFileName = "mnist_train.csv";
 
-        public static int i_nodes = 784;
-        public static int h_nodes = 100;
-        public static int o_nodes = 10;
-        public static double l_rate = 0.1;
-
-
         public static void Main(string[] args)
         {
+            int i_nodes = 784;
+            int h_nodes = 100;
+            int o_nodes = 10;
+            double l_rate = 0.1;
             var neuralNetwork = new NeuralNetwork(i_nodes, h_nodes, o_nodes, l_rate);
 
-            TrainNetwork(neuralNetwork, TestFileName, 1);
+            TrainNetwork(neuralNetwork, Test10FileName, 1);
             CountEfficiency(neuralNetwork, Test10FileName);
         }
 
@@ -31,7 +24,7 @@ namespace NeuronTraining
             //label = 3
             //targets = numpy.zeros(o_nodes) + 0.01
             //targets[label] = 0.99
-            var targets = Enumerable.Range(0, o_nodes).Select(x => 0.01).ToArray();
+            var targets = Enumerable.Range(0, neuralNetwork.OuptutNodesCount).Select(x => 0.01).ToArray();
             targets[label] = 0.99;
 
             //print("targets", targets)
@@ -49,7 +42,6 @@ namespace NeuronTraining
             reader.ReadFile(fileName);
 
             double[] inputs;
-            double[] targetsWithoutTarget = Enumerable.Range(0, o_nodes).Select(x => 0.01).ToArray();
 
             for (int i = 0; i < epochs; i++)
             {
@@ -57,17 +49,11 @@ namespace NeuronTraining
                 {
                     var number = item.Key;
                     inputs = item.Value;
-                    var targets = targetsWithoutTarget;
+                    var targets = new double[] { 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01 };
                     targets[number] = 0.99;
                     neuralNetwork.Train(inputs, targets);
+                    var a = true;
                 }
-            }
-
-            inputs = reader.Csv[0].Value;
-            var result = neuralNetwork.Query(inputs);
-            for (int i = 0; i < result.Length; i++)
-            {
-                Console.WriteLine(result[i]);
             }
         }
 
@@ -80,10 +66,16 @@ namespace NeuronTraining
             {
                 var number = item.Key;
                 var inputs = item.Value;
-                var targets = Enumerable.Range(0, o_nodes).Select(x => 0.01).ToArray();
+                var targets = Enumerable.Range(0, neuralNetwork.OuptutNodesCount).Select(x => 0.01).ToArray();
                 targets[number] = 0.99;
-                var result2 = neuralNetwork.Query(inputs);
-                var answer = Array.IndexOf(result2, result2.Max());
+                var result = neuralNetwork.Query(inputs);
+                var answer = Array.IndexOf(result, result.Max());
+
+                Console.WriteLine($"[{number}]----------------");
+                for (int i = 0; i < result.Length; i++)
+                {
+                    Console.WriteLine(result[i]);
+                }
                 if (answer == number)
                 {
                     scoreCard.Add(1);
